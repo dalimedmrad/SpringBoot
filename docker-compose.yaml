@@ -1,0 +1,37 @@
+version: '3.9'  # Docker Compose version being used
+#name: docker-spring-MySQL  # name of the Docker stack
+
+services:
+  MySql-db:
+    image: mysql:latest
+    container_name: MySql-db
+    restart: always
+    volumes: #  volume to persist data outside the container
+      - db:/data/db
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: traiteur
+      MYSQL_PASSWORD: root
+    ports:
+      - "3306:3306"
+    networks:
+      - docker-spring-MySQL
+
+  spring_boot_app:
+    build: .
+    container_name: spring_boot_app
+    ports:
+      - "8080:8081"
+    volumes:
+      - .:/app
+    depends_on:
+      - MySql-db
+    networks:
+      - docker-spring-MySQL
+
+networks:
+  docker-spring-MySQL:  # Declaration of the 'docker-workshop-network' network
+    driver: bridge  # Specify the driver for the network
+
+volumes:
+  db:  # Declaration of the 'db' volume
